@@ -1,0 +1,25 @@
+<h1>Listing invitations</h1>
+
+<table>
+  <tr>
+    <th>Email</th>
+    <th>User</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @invitations.each do |invitation| %>
+  <tr>
+    <td><%= invitation.email %></td>
+    <td><%= invitation.user_id %></td>
+    <td><%= link_to 'Show', invitation %></td>
+    <td><%= link_to 'Edit', edit_invitation_path(invitation) %></td>
+    <td><%= link_to 'Destroy', invitation, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Invitation', new_invitation_path %>
