@@ -1,0 +1,2 @@
+class CohumanToken < ConsumerToken
+end
