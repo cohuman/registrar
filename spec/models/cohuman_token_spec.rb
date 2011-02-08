@@ -19,6 +19,4 @@ describe CohumanToken do
       }
     end
   end
-  
-  
 end
