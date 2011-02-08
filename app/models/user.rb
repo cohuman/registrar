@@ -6,4 +6,19 @@ class User < ActiveRecord::Base
 
   # Setup accessible (or protected) attributes for your model
   attr_accessible :email, :password, :password_confirmation, :remember_me
+  
+  has_many :tokens, :class_name => 'ConsumerToken', :dependent => :destroy
+  has_many :access_tokens, :class_name => 'AccessToken'
+  has_many :request_tokens, :class_name => 'RequestToken'
+  
+  def access_token?
+    !!access_tokens.first
+  end
+  
+  def access_token
+    if access_token?
+      token = access_tokens.first
+      OAuth::AccessToken.new(consumer, token.token, token.secret)
+    end
+  end
 end

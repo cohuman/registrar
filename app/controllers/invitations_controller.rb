@@ -1,6 +1,8 @@
 class InvitationsController < ApplicationController
   # GET /invitations
   # GET /invitations.xml
+  before_filter :redirect_unless_admin, :redirect_unless_token
+  
   def index
     @invitations = Invitation.all
 

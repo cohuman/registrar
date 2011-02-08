@@ -1,0 +1,2 @@
+class RequestToken < ConsumerToken
+end

@@ -41,6 +41,8 @@
 #   }
 # }
 # 
-OAUTH_CREDENTIALS= {:cohuman => YAML.load( Rails.root + '/config/cohuman.yml')} unless defined? OAUTH_CREDENTIALS
+OAUTH_CREDENTIALS = HashWithIndifferentAccess.new({
+  :cohuman => YAML.load( File.read( "#{Rails.root}/config/cohuman.yml") )[Rails.env] 
+}) unless defined? OAUTH_CREDENTIALS
 
 load 'oauth/models/consumers/service_loader.rb'

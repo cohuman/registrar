@@ -9,6 +9,11 @@
 <body>
 	<div id='wrapper' class='<%= controller.controller_name %> <%= controller.action_name %>'>
 		<div class='inner'>
+			<% flash.each do |key| -%>
+				<div class='<%= key -%>'>
+					<%= flash[key] %>
+				</div>
+			<% end -%>
 			<%= image_tag 'cohuman_logo.png' %>
 			<%= yield %>
 		</div>
