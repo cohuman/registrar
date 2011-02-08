@@ -1,0 +1,7 @@
+key: YOUR_API_KEY
+secret: YOUR_API_SECRET
+options:
+  site: http://cohuman.com
+  request_token_path: /api/token/request
+  authorize_path: /api/authorize
+  access_token_path: /api/token/access

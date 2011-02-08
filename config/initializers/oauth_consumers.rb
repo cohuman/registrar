@@ -41,17 +41,6 @@
 #   }
 # }
 # 
-OAUTH_CREDENTIALS={
-  :cohuman => {
-    :key => "YOUR_API_KEY",
-    :secret => "YOUR_API_SECRET",
-    :options => {
-      :site               => 'http://cohuman.com',
-      :request_token_path => '/api/token/request',
-      :authorize_path     => '/api/authorize',
-      :access_token_path  => '/api/token/access'
-    }
-  }
-} unless defined? OAUTH_CREDENTIALS
+OAUTH_CREDENTIALS= {:cohuman => YAML.load( Rails.root + '/config/cohuman.yml')} unless defined? OAUTH_CREDENTIALS
 
 load 'oauth/models/consumers/service_loader.rb'
