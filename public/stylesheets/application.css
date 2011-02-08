@@ -49,7 +49,7 @@ table {
 
 body { font-size: 13px; line-height: 1.5; font-family: Arial, sans-serif; background-color: #82B700;}
 #wrapper {
-	margin: 1em auto; background-color: #eee;
+	margin: 3em auto; background-color: #eee;
 	-moz-border-radius-topright: 1em;
   -webkit-border-top-right-radius: 1em;
 	-moz-border-radius-bottomright: 1em;
@@ -85,13 +85,14 @@ a:hover { background-color: lightyellow; }
 
 input[type=submit]{
 	-moz-border-radius: 0.5em 0.5em 0.5em 0.5em;
-	background-color: #82B700;
-	border: 1px solid #659600;
+	background-color: #659600;
+	border: 1px solid #4d7300;
 	color: #FFFFFF;
 	cursor: pointer;
 	font-size: 1.25em;
 	font-weight: bold;
 	padding: 0 0.5em;
+	margin-top: 0.5em;
 }
 
 /* From Stubornella  - Grid system */
