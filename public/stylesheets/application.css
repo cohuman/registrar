@@ -1,0 +1,123 @@
+/* http://meyerweb.com/eric/tools/css/reset/ */
+/* v1.0 | 20080212 */
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-size: 100%;
+	vertical-align: baseline;
+	background: transparent;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+
+ins {
+	text-decoration: none;
+}
+del {
+	text-decoration: line-through;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+
+
+body { font-size: 13px; line-height: 1.5; font-family: Arial, sans-serif; background-color: #82B700;}
+#wrapper {
+	margin: 1em auto; background-color: #eee;
+	-moz-border-radius-topright: 1em;
+  -webkit-border-top-right-radius: 1em;
+	-moz-border-radius-bottomright: 1em;
+  -webkit-border-bottom-right-radius: 1em;
+	-moz-border-radius-topleft: 1em;
+  -webkit-border-top-left-radius: 1em;
+	-moz-border-radius-bottomleft: 1em;
+  -webkit-border-bottom-left-radius: 1em;
+ 	width: 300px; padding: 1em 2em 2em;
+}
+form { margin: 1em;}
+form input {margin-bottom: 0.75em;}
+
+h1 {font-size: 25px;}
+h2 {font-size: 23px;}
+h3 {font-size: 18px;}
+h3 { margin: 0; }
+h4 {font-size: 16px;}
+h5 {font-size: 11px;}
+h6 {font-size: 10px;}
+
+img {border: none;}
+
+textarea{font: 12px/1.5 } 
+
+big { font-size: 1.2em; }
+small {font-size: 0.8em; }
+
+/* LINKS */
+a { text-decoration: none; }
+a, a:visited,.ui-widget-content a { color: #340E4F }
+a:hover { background-color: lightyellow; }
+
+input[type=submit]{
+	-moz-border-radius: 0.5em 0.5em 0.5em 0.5em;
+	background-color: #82B700;
+	border: 1px solid #659600;
+	color: #FFFFFF;
+	cursor: pointer;
+	font-size: 1.25em;
+	font-weight: bold;
+	padding: 0 0.5em;
+}
+
+/* From Stubornella  - Grid system */
+@media screen and (max-width: 319px) {.unit{float: none !important; width: auto !important;}}
+.line:after,.lastUnit:after{clear:both;display:block;visibility:hidden;overflow:hidden;height:0 !important;line-height:0;font-size:xx-large;content:" x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x ";}
+.line{*zoom:1;}
+.unit{float:left;}
+.size1of1{float:none;}
+.size1of2{width:50%;}
+.size1of3{width:33.33333%;}
+.size2of3{width:66.66666%;}
+.size1of4{width:25%;}
+.size3of4{width:75%;}
+.size1of5{width:20%;}
+.size2of5{width:40%;}
+.size3of5{width:60%;}
+.size4of5{width:80%;}
+.size1of7{width:14%;}
+.size2of7{width:29%;}
+.size3of7{width:43%;}
+.size4of7{width:57%;}
+.size5of7{width:71%;}
+.size6of7{width:86%;}
+.size1of10{width:10%;}
+.size3of10{width:30%;}
+.size7of10{width:70%;}
+.size9of10{width:90%;}
+.lastUnit{display:table-cell;float:none;width:auto;*display:block;*zoom:1;_position:relative;_left:-3px;_margin-right:-3px;}
+.inner { padding: 0.5em; }

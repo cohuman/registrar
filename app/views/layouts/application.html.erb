@@ -7,8 +7,10 @@
   <%= csrf_meta_tag %>
 </head>
 <body>
-
-<%= yield %>
-
+	<div id='wrapper' class='<%= controller.controller_name %> <%= controller.action_name %>'>
+		<div class='inner'>
+			<%= yield %>
+		</div>
+	</div>
 </body>
 </html>

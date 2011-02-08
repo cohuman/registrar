@@ -5,11 +5,11 @@ describe "invitations/index.html.erb" do
     assign(:invitations, [
       stub_model(Invitation,
         :email => "Email",
-        :user_id => 1
+        :invitee_id => 1
       ),
       stub_model(Invitation,
         :email => "Email",
-        :user_id => 1
+        :invitee_id => 1
       )
     ])
   end

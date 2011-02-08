@@ -4,7 +4,7 @@ describe "invitations/show.html.erb" do
   before(:each) do
     @invitation = assign(:invitation, stub_model(Invitation,
       :email => "Email",
-      :user_id => 1
+      :invitee_id => 1
     ))
   end
 
