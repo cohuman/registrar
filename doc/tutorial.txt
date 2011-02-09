@@ -35,10 +35,10 @@ Authorizing users with Cohuman
 The 'oauth-plugin' uses an initializer to build configuration for access to the various OAuth site. Because we didn't want to publish our application key and secret via our code, and because we wanted to switch out configuration details depending on environment, we opted to put our credentials in a YAML file that is not committed in the code. Developers can build their own YAML file from a sample file that is committed in the code: /config/cohuman.yml.sample. This sample file shows the credentials broken down by environment. The initializer loads this YAML file into a constant when the application load. An additional need is that the application works on Heroku, which does not support uncommitted YAML files. Here is a snippet from the initializer that addresses these needs:
 
  		unless defined? OAUTH_CREDENTIALS
-		  options = if defined? COHUMAN_API_KEY # this and the COHUMAN_API_SECRET can be set on Heroku with their config settings
+		  options = if ENV['COHUMAN_API_KEY'] # ENV variables can be defined in Heroku via their command line gem
 		    HashWithIndifferentAccess.new({
-		        :key => COHUMAN_API_KEY,
-		        :secret => COHUMAN_API_SECRET
+		        :key => ENV['COHUMAN_API_KEY'],
+		        :secret => ENV['COHUMAN_API_SECRET']
 		    })
 		  else
 		    HashWithIndifferentAccess.new(YAML.load( File.read( "#{Rails.root}/config/cohuman.yml") )[Rails.env])

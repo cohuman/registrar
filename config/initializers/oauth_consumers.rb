@@ -42,10 +42,10 @@
 # }
 # 
 unless defined? OAUTH_CREDENTIALS
-  options = if defined? COHUMAN_API_KEY
+  options = if ENV['COHUMAN_API_KEY']
     HashWithIndifferentAccess.new({
-        :key => COHUMAN_API_KEY,
-        :secret => COHUMAN_API_SECRET
+        :key => ENV['COHUMAN_API_KEY'],
+        :secret => ENV['COHUMAN_API_SECRET']
     })
   else
     HashWithIndifferentAccess.new(YAML.load( File.read( "#{Rails.root}/config/cohuman.yml") )[Rails.env])
