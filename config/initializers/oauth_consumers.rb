@@ -50,6 +50,7 @@ unless defined? OAUTH_CREDENTIALS
   else
     HashWithIndifferentAccess.new(YAML.load( File.read( "#{Rails.root}/config/cohuman.yml") )[Rails.env])
   end
+  
   options.merge!(
     :options => {
       :site => 'http://api.cohuman.com',

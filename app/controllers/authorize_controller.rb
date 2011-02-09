@@ -5,7 +5,7 @@ class AuthorizeController < ApplicationController
       RequestToken.create(:user_id => current_user.id, :token => request_token.token, :secret => request_token.secret)
       redirect_to request_token.authorize_url
     rescue
-      redirect '/fail'
+      redirect_to '/fail'
     end
   end
   
