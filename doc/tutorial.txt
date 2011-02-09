@@ -4,10 +4,11 @@ Goal of the application
 
 In addition to building an example application that would show people how to interact with our API effectively, we wanted to create a fun application that we could use at tradeshows to sign people up for Cohuman. The application objectives are as follows: 
 	
-	- Users will, after creation, have to authorize themselves via Cohuman
-	- Invite a new person to Cohuman via email address
-	- Add three randomly generated tasks to that user
-	- Display user information and the three tasks created for that user
+- Users will, after creation, have to authorize themselves via Cohuman to use the Cohuman API
+- Users can invite a new person to Cohuman via email address
+- Inviting a user will add three randomly generated tasks to that user
+- One of the task may offer a free month's pro membership
+- After inviting the application will display the three tasks created for that user
 	
 Our application was built using Rails 3. We did this by installing the Rails 3 gem and then using the rails command line tool to build the application:
 
