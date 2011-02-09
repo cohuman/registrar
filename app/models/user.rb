@@ -11,6 +11,9 @@ class User < ActiveRecord::Base
   has_many :access_tokens, :class_name => 'AccessToken'
   has_many :request_tokens, :class_name => 'RequestToken'
   
+  has_many :invitations, :foreign_key => :inviter_id
+  
+  
   def access_token?
     !!access_tokens.first
   end

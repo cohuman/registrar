@@ -4,7 +4,7 @@ class InvitationsController < ApplicationController
   before_filter :redirect_unless_token
   
   def index
-    @invitations = Invitation.all
+    @invitations = Invitation.all(:conditions => {:inviter_id => current_user.id})
 
     respond_to do |format|
       format.html # index.html.erb
@@ -34,52 +34,17 @@ class InvitationsController < ApplicationController
     end
   end
 
-  # GET /invitations/1/edit
-  def edit
-    @invitation = Invitation.find(params[:id])
-  end
-
   # POST /invitations
   # POST /invitations.xml
   def create
-    @invitation = Invitation.new(params[:invitation])
+    @invitation = Invitation.new(params[:invitation].merge(:inviter_id => current_user.id))
 
-    respond_to do |format|
-      if @invitation.save
-        format.html { redirect_to(@invitation, :notice => 'Invitation was successfully created.') }
-        format.xml  { render :xml => @invitation, :status => :created, :location => @invitation }
-      else
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @invitation.errors, :status => :unprocessable_entity }
-      end
-    end
-  end
-
-  # PUT /invitations/1
-  # PUT /invitations/1.xml
-  def update
-    @invitation = Invitation.find(params[:id])
-
-    respond_to do |format|
-      if @invitation.update_attributes(params[:invitation])
-        format.html { redirect_to(@invitation, :notice => 'Invitation was successfully updated.') }
-        format.xml  { head :ok }
-      else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @invitation.errors, :status => :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /invitations/1
-  # DELETE /invitations/1.xml
-  def destroy
-    @invitation = Invitation.find(params[:id])
-    @invitation.destroy
-
-    respond_to do |format|
-      format.html { redirect_to(invitations_url) }
-      format.xml  { head :ok }
+    begin
+      @invitation.save
+      redirect_to( @invitation, :notice => 'Invitation was successfully created.' )
+    rescue Exception => e
+      flash[:error] = e.message
+      render :action => "new"
     end
   end
 end
