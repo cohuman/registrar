@@ -1,9 +1,9 @@
-== Cohuman Registrar
+= Cohuman Registrar
 
 The Cohuman Registrar is a sample Rails 3 application that posts and reads to the Cohuman API.
 A full tutorial writeup is available at /doc/tutorial.txt
 
-= Goals of the application
+== Goals of the application
 
 In addition to building an example application that would show people how to interact with our API effectively, we wanted to create a fun application that we could use at trade shows to sign people up for Cohuman. The application objectives are as follows: 
 	
@@ -13,7 +13,7 @@ In addition to building an example application that would show people how to int
 	- One of the task may offer a free month's pro membership
 	- After inviting the application will display the three tasks created for that user
 	
-= Tools
+== Tools
 
 Cohuman uses OAuth version 1.0 for its API. In this application we used the gems: 
 	- oauth, for general OAuth
