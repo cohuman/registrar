@@ -1,7 +1,9 @@
+source :rubygems
+
 gem 'rails', '3.0.3'
 
 gem 'oauth'
-gem "oauth-plugin", ">=0.4.0.pre1"
+gem "oauth-plugin", "0.4.0.pre4"
 
 gem 'devise'
 
