@@ -1,8 +1,12 @@
 class AuthorizeController < ApplicationController
   def index
-    request_token = CohumanToken.get_request_token("#{Site.domain}/authorize/callback")
-    RequestToken.create(:user_id => current_user.id, :token => request_token.token, :secret => request_token.secret)
-    redirect_to request_token.authorize_url
+    begin
+      request_token = CohumanToken.get_request_token("#{Site.domain}/authorize/callback")
+      RequestToken.create(:user_id => current_user.id, :token => request_token.token, :secret => request_token.secret)
+      redirect_to request_token.authorize_url
+    rescue
+      redirect '/fail'
+    end
   end
   
   def callback

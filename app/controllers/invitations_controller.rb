@@ -16,10 +16,14 @@ class InvitationsController < ApplicationController
   # GET /invitations/1.xml
   def show
     @invitation = Invitation.find(params[:id])
-
-    respond_to do |format|
-      format.html # show.html.erb
-      format.xml  { render :xml => @invitation }
+    if @invitation.inviter_id != current_user.id
+      redirect_to root_path 
+    else
+      @tasks = @invitation.get_tasks
+      respond_to do |format|
+        format.html # show.html.erb
+        format.xml  { render :xml => @invitation }
+      end
     end
   end
 
@@ -43,6 +47,8 @@ class InvitationsController < ApplicationController
       @invitation.save
       redirect_to( @invitation, :notice => 'Invitation was successfully created.' )
     rescue Exception => e
+      puts e.inspect
+      puts e.backtrace
       flash[:error] = e.message
       render :action => "new"
     end

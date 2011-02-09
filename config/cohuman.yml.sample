@@ -2,7 +2,7 @@ development: &defaults
   key: YOUR_KEY
   secret: YOUR_SECRET
   options:
-    site: http://cohuman.com
+    site: http://api.cohuman.com
     request_token_path: /api/token/request
     authorize_path: /api/authorize
     access_token_path: /api/token/access

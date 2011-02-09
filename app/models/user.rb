@@ -19,9 +19,10 @@ class User < ActiveRecord::Base
   end
   
   def access_token
-    if access_token?
+    if !@access_token && access_token?
       token = access_tokens.first
-      OAuth::AccessToken.new(consumer, token.token, token.secret)
+      @access_token = OAuth::AccessToken.new(CohumanToken.consumer, token.token, token.secret)
     end
+    @access_token
   end
 end

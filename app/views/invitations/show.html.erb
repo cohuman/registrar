@@ -1,15 +1,17 @@
-<p id="notice"><%= notice %></p>
-
 <p>
   <b>Email:</b>
   <%= @invitation.email %>
 </p>
 
 <p>
-  <b>User:</b>
-  <%= @invitation.invitee_id %>
+  <b>Inviter:</b>
+  <%= @invitation.inviter.email %>
 </p>
-
-
-<%= link_to 'Edit', edit_invitation_path(@invitation) %> |
-<%= link_to 'Back', invitations_path %>
+<hr>
+<h4>To Do:</h4>
+<% @tasks.each do |task| -%>
+	<p class='task'><%= task %></p>
+<% end -%>
+<div class='button'>		
+	<%= link_to 'Invite More People', root_path, :class => 'button_link' %>
+</div>

@@ -4,6 +4,7 @@ describe Invitation do
   before do
     @token = mock('AccessToken')
     @user = User.create :email => 'foo@gmail.com', :password => 'good_password', :password_confirmation => 'good_password'
+    @mock_response = mock('response')
   end
   
   it 'should have an inviter' do
@@ -32,14 +33,16 @@ describe Invitation do
       end
     
       it 'makes a request to Cohuman /invitation with the email' do
-        @token.should_receive(:post).with('http://cohuman.com/invitation', hash_including(:addresses => 'someone@somewhere.com')).and_return(@response)
+        @mock_response.should_receive(:body).any_number_of_times.and_return(@response)
+        @token.should_receive(:post).with('http://cohuman.com/invitation', hash_including(:addresses => 'someone@somewhere.com')).and_return(@mock_response)
         @user.should_receive(:access_token).and_return(@token)
       
         @invitation.post_invite
       end
     
       it 'parses the invitee id out of the response' do
-        @token.should_receive(:post).and_return(@response)
+        @mock_response.should_receive(:body).any_number_of_times.and_return(@response)
+        @token.should_receive(:post).and_return(@mock_response)
         @user.should_receive(:access_token).and_return(@token)
       
         @invitation.post_invite
@@ -47,7 +50,8 @@ describe Invitation do
       end
     
       it 'parses the invitee id out of existing users' do
-        @token.should_receive(:post).and_return(@existing_response)
+        @mock_response.should_receive(:body).any_number_of_times.and_return(@existing_response)
+        @token.should_receive(:post).and_return(@mock_response)
         @user.should_receive(:access_token).and_return(@token)
       
         @invitation.post_invite
@@ -55,7 +59,8 @@ describe Invitation do
       end
     
       it 'raises an error if it cannot find a user' do
-        @token.should_receive(:post).and_return(@error_response)
+        @mock_response.should_receive(:body).any_number_of_times.and_return(@error_response)
+        @token.should_receive(:post).and_return(@mock_response)
         @user.should_receive(:access_token).and_return(@token)
       
         lambda{ @invitation.post_invite }.should raise_error('Something went wrong')
@@ -63,7 +68,8 @@ describe Invitation do
     end
     
     it 'calls #post_tasks' do
-      @token.stub!(:post).and_return(@existing_response)
+      @mock_response.should_receive(:body).any_number_of_times.and_return(@existing_response)
+      @token.stub!(:post).and_return(@mock_response)
       @user.stub!(:access_token).and_return(@token)
       @invitation.should_receive(:post_tasks)
     
@@ -78,11 +84,12 @@ describe Invitation do
       end
       
       it 'makes a post request to Cohuman with multiple tasks' do
+        @mock_response.should_receive(:body).any_number_of_times.and_return(@task_response)
         @invitation.stub!(:generate_names).and_return('task one; task two; task three')
         @token.should_receive(:post).with(
           'http://cohuman.com/task', 
           hash_including(:name => 'task one; task two; task three', :owner_id => 42)
-        ).and_return(@task_response)
+        ).and_return(@mock_response)
         @user.should_receive(:access_token).and_return(@token)
         
         @invitation.post_tasks
@@ -119,18 +126,21 @@ describe Invitation do
     end
     
     it 'makes a get request to Cohuman for user information' do
-      @token.should_receive(:get).with("http://cohuman.com/user/42", anything).and_return(@user_info)
+      @mock_response.should_receive(:body).any_number_of_times.and_return(@user_info)
+      @token.should_receive(:get).with("http://cohuman.com/user/42", anything).and_return(@mock_response)
       
       @invitation.get_tasks
     end
     
     it 'returns an array of task names' do
-      @token.stub!(:get).and_return(@user_info)
+      @mock_response.should_receive(:body).any_number_of_times.and_return(@user_info)
+      @token.stub!(:get).and_return(@mock_response)
       @invitation.get_tasks.should == ['new task 1', 'new task 2']
     end
     
     it 'returns an empty array if an error message is returned' do
-      @token.stub!(:get).and_return(@error)
+      @mock_response.should_receive(:body).any_number_of_times.and_return(@error)
+      @token.stub!(:get).and_return(@mock_response)
       @invitation.get_tasks.should == []
     end
   end

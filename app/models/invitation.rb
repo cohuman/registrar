@@ -3,22 +3,36 @@ class Invitation < ActiveRecord::Base
   
   before_create :post_invite
   
+  def post(url, params)
+    inviter.access_token.post(url, params)
+  end
+  
+  def cohuman_domain
+    OAUTH_CREDENTIALS[:cohuman][:options][:site]
+  end
+  
+  GENERAL_ERROR = "We are sorry. Something went wrong"
+  
   def post_invite
-    response = inviter.access_token.post('http://cohuman.com/invitation', :addresses => self.email, :format => 'json')
-    hash = JSON.parse(response)
-    invitee = hash['activity'] && hash['activity']['invitees'] && hash['activity']['invitees'].first
-    invitee = hash['activity'] && hash['activity']['existing_users'] && hash['activity']['existing_users'].first unless invitee
-    if invitee
-      self.invitee_id = invitee['id'] 
-      post_tasks
+    response = post("#{cohuman_domain}/invitation", :addresses => self.email, :format => 'json')
+    if response.respond_to?(:body)
+      hash = JSON.parse(response.body)
+      invitee = hash['activity'] && hash['activity']['invitees'] && hash['activity']['invitees'].first
+      invitee = hash['activity'] && hash['activity']['existing_users'] && hash['activity']['existing_users'].first unless invitee
+      if invitee
+        self.invitee_id = invitee['id'] 
+        post_tasks
+      else
+        error = hash["error"] && hash["error"]["message"]
+        raise error || GENERAL_ERROR
+      end
     else
-      error = hash["error"] && hash["error"]["message"]
-      raise error || "We are sorry. Something went wrong"
+      raise GENERAL_ERROR
     end
   end
   
   def post_tasks
-    response = inviter.access_token.post('http://cohuman.com/task', :owner_id => invitee_id, :format => 'json', :name => generate_names) rescue nil
+    response = post("#{cohuman_domain}/task", :owner_id => invitee_id, :format => 'json', :name => generate_names) rescue nil
   end
   
   def generate_names
@@ -32,12 +46,14 @@ class Invitation < ActiveRecord::Base
   end
   
   def get_tasks
-    response = inviter.access_token.get("http://cohuman.com/user/#{invitee_id}", {"Content-Type" => "application/json"})
-    hash = JSON.parse(response)
+    response = inviter.access_token.get("#{cohuman_domain}/user/#{invitee_id}", {"Content-Type" => "application/json"})
     array = []
-    if task_array = hash['user'] && hash['user']['just_added_tasks']
-      task_array.each do |task_hash|
-        array << task_hash['name']
+    if response.respond_to?(:body)
+      hash = JSON.parse(response.body)
+      if task_array = hash['user'] && hash['user']['just_added_tasks']
+        task_array.each do |task_hash|
+          array << task_hash['name']
+        end
       end
     end
     array

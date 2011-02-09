@@ -7,13 +7,15 @@
   <%= csrf_meta_tag %>
 </head>
 <body>
+	<% if flash[:error] -%>
+		<p id='error' class="flash"><%= flash[:error] %></p>
+	<% end -%>
+	
+	<% if flash[:notice] -%>
+		<p id='notice' class="flash"><%= flash[:notice] %></p>
+	<% end -%>
 	<div id='wrapper' class='<%= controller.controller_name %> <%= controller.action_name %>'>
 		<div class='inner'>
-			<% flash.each do |key| -%>
-				<div class='<%= key -%>'>
-					<%= flash[key] %>
-				</div>
-			<% end -%>
 			<%= image_tag 'cohuman_logo.png' %>
 			<%= yield %>
 		</div>

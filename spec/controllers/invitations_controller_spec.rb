@@ -43,9 +43,15 @@ describe InvitationsController do
 
   describe "GET show" do
     it "assigns the requested invitation as @invitation" do
-      Invitation.stub(:find).with("37") { mock_invitation }
+      Invitation.stub(:find).with("37") { mock_invitation(:inviter_id => @current_user.id) }
       get :show, :id => "37"
       assigns(:invitation).should be(mock_invitation)
+    end
+    
+    it 'redirects if current user is not inviter' do
+      Invitation.stub(:find).with("37") { mock_invitation(:inviter_id => @current_user.id + 10) }
+      get :show, :id => "37"
+      response.should be_redirect
     end
   end
 

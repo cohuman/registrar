@@ -2,6 +2,12 @@
   color: green;
 }
 
+#error {
+	color: maroon;
+}
+
+.flash { width: 400px; background-color: white; margin: 1em auto; padding: 2em; -moz-border-radius: 0.5em 0.5em 0.5em 0.5em;}
+
 .field_with_errors {
   padding: 2px;
   background-color: red;
