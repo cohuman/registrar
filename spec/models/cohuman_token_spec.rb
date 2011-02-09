@@ -12,7 +12,7 @@ describe CohumanToken do
     
     it 'has the right options' do
       CohumanToken.options.should == {
-        'site' => 'http://cohuman.com',
+        'site' => 'http://api.cohuman.com',
         'request_token_path' => '/api/token/request',
         'authorize_path' => '/api/authorize',
         'access_token_path' => '/api/token/access'

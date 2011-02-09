@@ -1,0 +1,154 @@
+Building a Rails application that uses the Cohuman API
+
+Goal of the application
+
+In addition to building an example application that would show people how to interact with our API effectively, we wanted to create a fun application that we could use at tradeshows to sign people up for Cohuman. The application objectives are as follows: 
+	
+	- Users will, after creation, have to authorize themselves via Cohuman
+	- Invite a new person to Cohuman via email address
+	- Add three randomly generated tasks to that user
+	- Display user information and the three tasks created for that user
+	
+Our application was built using Rails 3. We did this by installing the Rails 3 gem and then using the rails command line tool to build the application:
+
+	> 	rails new registrar
+
+Next we established the gems we would be using for our application. Because Cohuman uses OAuth version 1.0 we chose the 'oauth' gem and its Rails companion 'oauth-plugin'. Currently the 'oauth-plugin' gem that works with Rails 3 is in pre-release, and in our Gemfile we specified the exact version we desired. In addition to using 'oauth' to authorize and work with the Cohuman API, we needed an easy user management system for our Rails application. We chose the gem 'devise'. These and other gems were installed using bundler:
+
+	> 	bundle install
+	
+The devise gem requires that the developer install via a generate command:
+
+  >   rails generate devise:install
+
+Also, the oauth-plugin requires a similar installation:
+
+  >   rails generate oauth_consumer
+	
+These generations add models, controllers and migrations to the application that allow for easier integration of user and OAuth.	
+
+Next we wanted to assure that any user in our application is authorized to use Cohuman before attempting any operations. We, therefore, created another controller method to filter any traffic that was not authorized. Before we go into that method, let's explore the OAuth related models used by the 'oauth-plugin'.
+
+Authorizing users with Cohuman
+
+The 'oauth-plugin' uses an initializer to build configuration for access to the various OAuth site. Because we didn't want to publish our application key and secret via our code, and because we wanted to switch out configuration details depending on environment, we opted to put our credentials in a YAML file that is not committed in the code. Developers can build their own YAML file from a sample file that is committed in the code: /config/cohuman.yml.sample. This sample file shows the credentials broken down by environment. The initializer loads this YAML file into a constant when the application load. Here is a snippet from the initializer:
+
+ 		OAUTH_CREDENTIALS = HashWithIndifferentAccess.new({
+		  :cohuman => YAML.load( File.read( "#{Rails.root}/config/cohuman.yml" ) )[Rails.env] 
+		}) unless defined? OAUTH_CREDENTIALS
+		
+The 'oauth-plugin' anticipates a companion model named CohumanToken which can build an appropriate OAuth consumer. This OAuth consumer is then used to get request tokens and make other requests to the site. We used this model for its class level helper methods. We added additional classes RequestToken and AccessToken to persist token data. We made this design decision because we only anticipate using one external OAuth service (Cohuman). If we were to use many services we would name the tokens CohumanRequestToken and CohumanAccessToken. The relationships on the user would also change to match the difference in class names. Here is the most useful class level helper that we added to the class:
+
+		def self.request_token(code)
+		  found_token = RequestToken.first(:conditions => {:token => code})
+		  OAuth::RequestToken.new(consumer, found_token.token, found_token.secret)
+		end
+
+As can be seen this helper takes the oauth token code returned via a request and will find the saved RequestToken. It then converts it to the appropriated OAuth::RequestToken object which knows how to construct a request for an access token. 
+
+With the addition of these token classes, we added a number of relationships and methods to the user:
+
+		has_many :tokens, :class_name => 'ConsumerToken', :dependent => :destroy
+		has_many :access_tokens, :class_name => 'AccessToken'
+		has_many :request_tokens, :class_name => 'RequestToken'
+
+		def access_token?
+		  !!access_tokens.first
+		end
+
+		def access_token
+		  if access_token?
+		    token = access_tokens.first
+		    OAuth::AccessToken.new(consumer, token.token, token.secret)
+		  end
+		end
+
+
+We built an AuthorizeController to manage the three-legged OAuth flow. The controller method #redirect_unless_admin that we wrote in our application controller will ensure that anyone without an existing access token will be forced into the authorization controller:
+
+		def redirect_unless_token
+		  unless current_user && current_user.access_token?
+		    redirect_to('/authorize')
+		  end
+		end
+		
+This method can be added as a before_filter on any controller, or it can be called directly from a controller action. The '/authorize' path in our example application does the work of constructing an OAuth consumer and starting the three-legged token exchange. Our routes have '/authorize' pointing to 'authorize#index'. At the end of the action, the user is redirected to Cohuman to authorize the application. Here is a code snippet where the action is defined:
+
+		def index
+	    begin
+	      request_token = CohumanToken.get_request_token("#{Site.domain}/authorize/callback")
+	      RequestToken.create(:user_id => current_user.id, :token => request_token.token, :secret => request_token.secret)
+	      redirect_to request_token.authorize_url
+	    rescue
+	      redirect '/fail'
+	    end
+	  end
+	
+In this code snippet, the class method #get_request_token is part of the built in ConsumerToken functionality provided by the 'oauth-plugin' gem. The request token's authorize url will send the user to Cohuman, where they can choose to authorize this application to use their private Cohuman data. When they authorize the application Cohuman will send the request back to our example application's callback url: '/authorize/callback'. The code for this action is as follows:
+
+		def callback
+	    begin 
+	      request_token = CohumanToken.request_token(request.referrer[/[a-z0-9]*$/i])
+	      access_token = request_token.get_access_token
+	      access_token = AccessToken.create(:user_id => current_user.id, :token => access_token.token, :secret => access_token.secret)
+	    rescue Exception => e
+	      flash e.message
+	    end
+	    redirect_to root_path
+	  end
+
+The class method #request_token is shown above and basically translates the token and secret persisted in the database into an OAuth token that can be used to make further requests. Our callback action takes that token and asks for an access token. The access token details are saved to the database for use in later requests. The user is then redirected to the root path where they will be able to use their access to the Cohuman data to fulfill application goals. 
+ 
+
+Inviting Users
+
+We constructed an invitation resource in order to manage our process of adding new users to Cohuman via the example application. We wanted to persist data about the inviter, the invitee, and the email used to create the invited user. We created the resource with a rails generator:
+
+  >   rails generate scaffold Invitation invitee_id:integer inviter_id:integer email:string
+
+The inviter_id maps to a user id within our local application. The invitee_id however is related to a user id in the Cohuman application. Since the inviter has the ability to make Cohuman API requests through their access token, the creation of the invitation object was a good place to make post requests to the Cohuman API. We, therefore built a number of methods on the invitation object and added a before_create lifecycle hook that initiates the process of creating a user and assigning tasks:
+
+		def post(url, params)
+	    inviter.access_token.post(url, params)
+	  end
+	
+The post method encapsulates request logic for a post API call to Cohuman. The inviter, who is also the current user, has an OAuth access token which can make post requests.	
+		
+		def cohuman_domain
+	    OAUTH_CREDENTIALS[:cohuman][:options][:site]
+	  end
+	
+	  def post_invite
+	    response = post("#{cohuman_domain}/invitation", :addresses => self.email, :format => 'json')
+	    if response.respond_to?(:body)
+	      hash = JSON.parse(response.body)
+	      invitee = hash['activity'] && hash['activity']['invitees'] && hash['activity']['invitees'].first
+	      invitee = hash['activity'] && hash['activity']['existing_users'] && hash['activity']['existing_users'].first unless invitee
+	      if invitee
+	        self.invitee_id = invitee['id'] 
+	        post_tasks
+	      else
+	        error = hash["error"] && hash["error"]["message"]
+	        raise error || GENERAL_ERROR
+	      end
+	    else
+	      raise GENERAL_ERROR
+	    end
+	  end
+
+The #post_invite method is called before create and takes the email address in the invitation and posts an invitation request to Cohuman. We request this data in JSON and then parse the information from the response. The invitee_id is extracted from the response, whether the user already exists or was newly created. More details on the behavior of this method are in the Invitation model specs.
+
+	  def post_tasks
+	    response = post("#{cohuman_domain}/task", :owner_id => invitee_id, :format => 'json', :name => generate_names) rescue nil
+	  end
+
+If a user is successfully invited into the system, the last step in creating an invitation is to generate three tasks for the new user. The Cohuman API allows for the creation of multiple tasks in one request by submitting a semicolon or pipe delimited string.
+
+Within the invitation controller, we ensure that the current user is properly associated with all invitation interactions. First, the index action only allows the current user to see the invitations that they have created. Second, the create task builds the invitation with the current user as the inviter. Last, the show action redirects if the current user is not the inviter.
+
+Because the invitation process is the heart of our application, we changed the application routes make the 'invitations#new' action the root or home path. So while a user is logged in and authorized with an access token, the application domain will show a new invitation view. To ensure protection of this invitation resource, we added a before filter to the controller using #redirect_unless_token.
+
+
+
+
+

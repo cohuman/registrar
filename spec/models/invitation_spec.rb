@@ -34,7 +34,7 @@ describe Invitation do
     
       it 'makes a request to Cohuman /invitation with the email' do
         @mock_response.should_receive(:body).any_number_of_times.and_return(@response)
-        @token.should_receive(:post).with('http://cohuman.com/invitation', hash_including(:addresses => 'someone@somewhere.com')).and_return(@mock_response)
+        @token.should_receive(:post).with('http://api.cohuman.com/invitation', hash_including(:addresses => 'someone@somewhere.com')).and_return(@mock_response)
         @user.should_receive(:access_token).and_return(@token)
       
         @invitation.post_invite
@@ -87,7 +87,7 @@ describe Invitation do
         @mock_response.should_receive(:body).any_number_of_times.and_return(@task_response)
         @invitation.stub!(:generate_names).and_return('task one; task two; task three')
         @token.should_receive(:post).with(
-          'http://cohuman.com/task', 
+          'http://api.cohuman.com/task', 
           hash_including(:name => 'task one; task two; task three', :owner_id => 42)
         ).and_return(@mock_response)
         @user.should_receive(:access_token).and_return(@token)
@@ -127,7 +127,7 @@ describe Invitation do
     
     it 'makes a get request to Cohuman for user information' do
       @mock_response.should_receive(:body).any_number_of_times.and_return(@user_info)
-      @token.should_receive(:get).with("http://cohuman.com/user/42", anything).and_return(@mock_response)
+      @token.should_receive(:get).with("http://api.cohuman.com/user/42", anything).and_return(@mock_response)
       
       @invitation.get_tasks
     end

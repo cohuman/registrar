@@ -13,7 +13,9 @@ describe User do
     end
     
     it 'should have invitations' do
-      invitation = Invitation.create(:inviter_id => @user.id, :invitee_id => '42')
+      invitation = Invitation.new(:inviter_id => @user.id, :invitee_id => '42')
+      invitation.stub!(:post_invite).and_return(true)
+      invitation.save
       @user.invitations.size.should == 1
       @user.invitations.first.should == invitation
     end

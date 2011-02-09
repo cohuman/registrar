@@ -47,8 +47,6 @@ class InvitationsController < ApplicationController
       @invitation.save
       redirect_to( @invitation, :notice => 'Invitation was successfully created.' )
     rescue Exception => e
-      puts e.inspect
-      puts e.backtrace
       flash[:error] = e.message
       render :action => "new"
     end
