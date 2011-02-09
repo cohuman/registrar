@@ -32,11 +32,29 @@ Next we wanted to assure that any user in our application is authorized to use C
 
 Authorizing users with Cohuman
 
-The 'oauth-plugin' uses an initializer to build configuration for access to the various OAuth site. Because we didn't want to publish our application key and secret via our code, and because we wanted to switch out configuration details depending on environment, we opted to put our credentials in a YAML file that is not committed in the code. Developers can build their own YAML file from a sample file that is committed in the code: /config/cohuman.yml.sample. This sample file shows the credentials broken down by environment. The initializer loads this YAML file into a constant when the application load. Here is a snippet from the initializer:
+The 'oauth-plugin' uses an initializer to build configuration for access to the various OAuth site. Because we didn't want to publish our application key and secret via our code, and because we wanted to switch out configuration details depending on environment, we opted to put our credentials in a YAML file that is not committed in the code. Developers can build their own YAML file from a sample file that is committed in the code: /config/cohuman.yml.sample. This sample file shows the credentials broken down by environment. The initializer loads this YAML file into a constant when the application load. An additional need is that the application works on Heroku, which does not support uncommitted YAML files. Here is a snippet from the initializer that addresses these needs:
 
- 		OAUTH_CREDENTIALS = HashWithIndifferentAccess.new({
-		  :cohuman => YAML.load( File.read( "#{Rails.root}/config/cohuman.yml" ) )[Rails.env] 
-		}) unless defined? OAUTH_CREDENTIALS
+ 		unless defined? OAUTH_CREDENTIALS
+		  options = if defined? COHUMAN_API_KEY # this and the COHUMAN_API_SECRET can be set on Heroku with their config settings
+		    HashWithIndifferentAccess.new({
+		        :key => COHUMAN_API_KEY,
+		        :secret => COHUMAN_API_SECRET
+		    })
+		  else
+		    HashWithIndifferentAccess.new(YAML.load( File.read( "#{Rails.root}/config/cohuman.yml") )[Rails.env])
+		  end
+		
+		  options.merge!(
+		    :options => {
+		      :site => 'http://api.cohuman.com',
+		      :request_token_path => '/api/token/request',
+		      :authorize_path => '/api/authorize',
+		      :access_token_path => '/api/token/access'
+		    }
+		  )
+
+		  OAUTH_CREDENTIALS = {:cohuman => options }
+		end
 		
 The 'oauth-plugin' anticipates a companion model named CohumanToken which can build an appropriate OAuth consumer. This OAuth consumer is then used to get request tokens and make other requests to the site. We used this model for its class level helper methods. We added additional classes RequestToken and AccessToken to persist token data. We made this design decision because we only anticipate using one external OAuth service (Cohuman). If we were to use many services we would name the tokens CohumanRequestToken and CohumanAccessToken. The relationships on the user would also change to match the difference in class names. Here is the most useful class level helper that we added to the class:
 

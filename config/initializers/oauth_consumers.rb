@@ -41,8 +41,25 @@
 #   }
 # }
 # 
-OAUTH_CREDENTIALS = HashWithIndifferentAccess.new({
-  :cohuman => YAML.load( File.read( "#{Rails.root}/config/cohuman.yml") )[Rails.env] 
-}) unless defined? OAUTH_CREDENTIALS
+unless defined? OAUTH_CREDENTIALS
+  options = if defined? COHUMAN_API_KEY
+    HashWithIndifferentAccess.new({
+        :key => COHUMAN_API_KEY,
+        :secret => COHUMAN_API_SECRET
+    })
+  else
+    HashWithIndifferentAccess.new(YAML.load( File.read( "#{Rails.root}/config/cohuman.yml") )[Rails.env])
+  end
+  options.merge!(
+    :options => {
+      :site => 'http://api.cohuman.com',
+      :request_token_path => '/api/token/request',
+      :authorize_path => '/api/authorize',
+      :access_token_path => '/api/token/access'
+    }
+  )
+  
+  OAUTH_CREDENTIALS = {:cohuman => options }
+end
 
 load 'oauth/models/consumers/service_loader.rb'
