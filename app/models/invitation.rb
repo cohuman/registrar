@@ -105,7 +105,7 @@ class Invitation < ActiveRecord::Base
     "Friend Cohuman on Facebook",
     "Follow Cohuman on Twitter",
     "Subscribe to Cohuman Blog",
-    "CLEAN TOILET – before date",
+    "CLEAN TOILET -- before date",
     "Buy more TP and beer tonight",
     "Buy batteries for TV remote",
     "'Borrow' printer paper from work",
