@@ -24,6 +24,8 @@ Cohuman uses OAuth version 1.0 for its API. In this application we used the gems
 == Playing with the application
 	git clone git://github.com/cohuman/registrar.git
 	cd registrar
+	sudo gem install bundler
+	bundle install #installs all of the gems we're using for this project
 	cp config/cohuman.yml.sample config/cohuman.yml
 	# edit config/cohuman.yml and put in your developer key and secret from http://cohuman.com/developer/api_key
 	rake db:migrate
