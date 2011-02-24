@@ -20,3 +20,15 @@ Cohuman uses OAuth version 1.0 for its API. In this application we used the gems
 	- oauth-plugin, for easy use of OAuth within Rails
 	- devise, for fast and easy user authentication on the sample application
 	- json, to parse requests received by the Cohuman API
+	
+== Playing with the application
+  git clone git://github.com/cohuman/registrar.git
+	cd registrar
+	cp config/cohuman.yml.sample config/cohuman.yml
+	# edit config/cohuman.yml and put in your developer key and secret from http://cohuman.com/developer/api_key
+	rake db:migrate
+	rails server -p 5000
+	# go to http://localhost:5000
+	# Sign up for the Registrar (use any email you like)
+	# You'll then be prompted to authorize a Cohuman account
+	# Start inviting people with the Registrar. Whichever Cohuman account you authorized will act as the inviter (i.e. registrar)
